@@ -1,0 +1,11 @@
+<!-- index.xml -->
+<Alloy>
+	<!-- a tab group allows to switch between views using a tabbed interface -->
+	<TabGroup>
+		<!-- Tabs included using the require tag -->
+		<!-- src refers to the controller file, the id is for cross-controller referencing -->
+		<Require id="feedController" src="feed" />
+		<Require id="friendsController" src="friends" />
+		<Require id="settingsController" src="settings" />
+	</TabGroup>
+</Alloy>

@@ -1,0 +1,9 @@
+<!-- feed.xml 
+     building the feed view -->
+<Alloy>
+	<Tab title="Feed">
+		<Window title="Feed">
+			<Label>This is the Feed Tab</Label>
+		</Window>
+	</Tab>
+</Alloy>
