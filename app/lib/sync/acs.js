@@ -1,3 +1,8 @@
+/*
+ * Sync adapters are required such that the models can connect to a 
+ * persistence strategy of your choosing.
+ */
+
 function S4() {
 	return ((1 + Math.random()) * 65536 | 0).toString(16).substring(1);
 }
