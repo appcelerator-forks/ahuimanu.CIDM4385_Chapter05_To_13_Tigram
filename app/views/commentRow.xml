@@ -4,7 +4,7 @@
 			<ImageView id="avatar" />
 			<View class="textContainer">
 				<View class="userInfo" layout="horizontal">
-					<Label id="userDate" />
+					<Label id="userName" />
 					<Label id="date" />					
 				</View>
 				<Label id="comment"></Label>
