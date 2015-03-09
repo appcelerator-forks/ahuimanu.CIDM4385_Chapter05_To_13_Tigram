@@ -60,6 +60,14 @@ user.login("cidm4385_tigram_admin", "cidm4385", function(_response) {
 });
 
 
+/**
+ * Creates the global ability to open windows given the current tab
+ * @param {Object} _window
+ */
+Alloy.Globals.openCurrentTabWindow = function(_window) {
+	$.tabGroup.activeTab.open(_window);
+}; 
+
 
 //we'll change this to $.tabGroup.open()
 //$.index.open();

@@ -6,6 +6,51 @@ OS_IOS && $.cameraButton.addEventListener("click", function(_event) {
 });
 
 //event handlers
+$.feedTable.addEventListener("click", processTableClicks);
+
+//handlers
+
+
+function processTableClicks(_event) {
+	if (_event.source.id === "commentButton") {
+		handleCommentButtonClicked(_event);
+	} else if (_event.source.id === "locationButton") {
+		handleLocationButtonClicked(_event);
+	} else if (_event.source.id === "shareButton") {
+		handleShareButtonClicked(_event);
+	}
+}
+
+
+/**
+ * work on handling comments through the comment model
+ */
+function handleCommentButtonClicked(_event) {
+	var collection,
+	    model = null;
+
+	// handle call from mapDetail or feedRow
+	if (!_event.row) {
+		model = _event.data;
+	} else {
+		collection = Alloy.Collections.instance("Photo");
+		model = collection.get(_event.row.row_id);
+	}
+
+	var controller = Alloy.createController("comment", {
+		photo : model,
+		parentController : $
+	});
+
+	// initialize the data in the view, load content
+	controller.initialize();
+
+	// open the view
+	Alloy.Globals.openCurrentTabWindow(controller.getView());
+
+}
+
+
 
 /*
  * In this code, we retrieve a picture and the event.media object holding the picture
@@ -77,6 +122,8 @@ title: "Sample Photo " + new Date()
 _callback(photoObject);
 
 }*/
+
+//utility methods
 
 /**
  *
