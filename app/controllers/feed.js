@@ -47,10 +47,7 @@ function handleCommentButtonClicked(_event) {
 
 	// open the view
 	Alloy.Globals.openCurrentTabWindow(controller.getView());
-
 }
-
-
 
 /**
  * In this code, we retrieve a picture and the event.media object holding the picture
@@ -60,9 +57,11 @@ function handleCommentButtonClicked(_event) {
  * see: http://docs.appcelerator.com/titanium/latest/#!/guide/TableViews
  */
 $.cameraButtonClicked = function(_event) {
-	alert("user clicked the camera button");
+	//alert("user clicked the camera button");
 	
-	var photoSource = null;
+	var photoSource;
+	
+	Ti.API.debug('Ti.Media.isCameraSupported ' + Ti.Media.isCameraSupported);	
 	
 	if(Titanium.Media.getIsCameraSupported()){
 		photoSource = Titanium.Media.showCamera;
@@ -70,15 +69,10 @@ $.cameraButtonClicked = function(_event) {
 		photoSource = Titanium.Media.openPhotoGallery;
 	}
 
-	//var photoSource = Titanium.Media.getIsCameraSupported() ? Titanium.Media.showCamera : Titanium.Media.openPhotoGallery;
 
-	//photosource is now a variable representing one of the methods above:
-	//Titanium.Media.showCamera OR Titanium.Media.openPhotoGallery
-	//the constructed object is the expected argument to that method
-	//thus, the code below is a call to that method
 	photoSource({
-		success : function(event) {
-			//seonc argument is the callback
+		success : function(_event) {
+			//second argument is the callback
 			processImage(event.media, function(processResponse) {
 
 				if(processResponse.success){
