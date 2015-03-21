@@ -57,8 +57,14 @@ exports.definition = {
 						}
 					}
 				);
-			},
+			}, //end login
 
+			/**
+			 * Allows for the creation of a new user
+			 *   
+ 		     * @param {Object} _ucerInfo
+ 			 * @param {Object} _callback
+			 */
 			createAccount: function(_ucerInfo, _callback)
 			{
 				var cloud = this.config.Cloud;
@@ -106,7 +112,116 @@ exports.definition = {
 						}
 					});
 				}
-			}			
+			}, //end createAccount
+			
+			/**
+			 * the ability for the user to logout 
+             * @param {Object} _callback
+			 */			
+			logout: function(_callback)
+			{
+				var cloud = this.config.Cloud;
+				var TAP = Ti.App.Properties;
+				
+				//e is the response populated by calling logout on ACS
+				cloud.Users.logout(function(e)
+					{
+						//success is a property of the ACS user object
+						if(e.success)
+						{
+							//the first element of the users array contains the current user
+							var user = e.users[0];
+							
+							//unset these variables from the properties store - like session variables
+							TAP.removeProperty("sessionId");
+							TAP.removeProperty("user");
+							
+							//callback which clears out the user model
+							_callback && _callback(
+								{
+									success: true,
+									model: null
+								}
+							);
+						} else {
+							//no bueno
+							Ti.API.error(e);
+							
+							//callback in case of error
+							_callback && _callback(
+								{
+									success: false,
+									model: null,
+									error: e
+								}
+							);
+						}
+					}
+				);
+			}, //end logout
+			
+			/**
+			 * this checks to see that the user is authenticated currently 
+			 */
+			authenticated: function()
+			{
+				var cloud = this.config.Cloud;
+				var TAP = Ti.App.Properties;
+				
+				//check for success
+				if(TAP.hasPropert("sessionId")){
+					Ti.API.info("SESSION ID: " + TAP.getString("SessionId"));
+					cloud.sessionId = TAP.getString("SessionId");
+					return true;
+				}
+				
+				//presume failure
+				return false;
+			},
+			
+			//shows who is currently logged in - who the user is - by sessionId
+			showMe: function(_callback)
+			{
+				var cloud = this.config.Cloud;
+				var TAP = Ti.App.Properties;
+				
+				cloud.Users.showMe(function(e)
+					{
+						if(e.success)
+						{
+							//this is the current user if we were able to successfully contact ACS with showMe
+							var user = e.users[0];
+							
+							//set the properties variables
+							TAP.setString("sessionId", e.meta.session_id);
+							TAP.setString("user", JSON.stringify(user));
+							
+							//callback if successful
+							_callback && _callback(
+								{
+									success: true,
+									model: new model(user)
+								}
+							);
+						} else {
+							//no bueno
+							Ti.App.error(e);
+							
+							TAP.removeProperty("sessionId");
+							TAP.removeProperty("user");
+							
+							//call back in the case of "no bueno"
+							_callback && _callback(
+								{
+									success: false,
+									model: null,
+									error: e
+								}
+							);
+						}
+					}
+				);
+			}, //end showMe
 		});
 
 		return Model;
