@@ -3,7 +3,7 @@
     <property name="acs-api-key-production" type="string">z8640KziazugvJ1deNWroElvkkliWkax</property>
     <property name="acs-api-key-development" type="string">4RPY0CyChEiSvH9lbTze8UEHXXfWrLTK</property>
     <id>edu.wtamu.cis.cidm4385.Tigram</id>
-    <name>CIDM4385_Chapter05_Tigram</name>
+    <name>CIDM4385_Chapter05_To_13_Tigram</name>
     <version>1.0</version>
     <publisher>jeff</publisher>
     <url>http://www.cis.wtamu.edu</url>

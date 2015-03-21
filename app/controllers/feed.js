@@ -52,7 +52,7 @@ function handleCommentButtonClicked(_event) {
 
 
 
-/*
+/**
  * In this code, we retrieve a picture and the event.media object holding the picture
  * taken by the user.  We need to place the image into a table view according to the wireframes
  * we worked up.  We do this by adding items to a row, then inserting the row into the table view
@@ -61,8 +61,16 @@ function handleCommentButtonClicked(_event) {
  */
 $.cameraButtonClicked = function(_event) {
 	alert("user clicked the camera button");
+	
+	var photoSource = null;
+	
+	if(Titanium.Media.getIsCameraSupported()){
+		photoSource = Titanium.Media.showCamera;
+	} else {
+		photoSource = Titanium.Media.openPhotoGallery;
+	}
 
-	var photoSource = Titanium.Media.getIsCameraSupported() ? Titanium.Media.showCamera : Titanium.Media.openPhotoGallery;
+	//var photoSource = Titanium.Media.getIsCameraSupported() ? Titanium.Media.showCamera : Titanium.Media.openPhotoGallery;
 
 	//photosource is now a variable representing one of the methods above:
 	//Titanium.Media.showCamera OR Titanium.Media.openPhotoGallery
