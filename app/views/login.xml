@@ -1,0 +1,18 @@
+<Alloy>
+	<Window id="index" class="loginContainer">
+		<!-- scroll view helps to manage the UI when the keyboard is displayed for user input -->
+		<ScrollView>
+			<!-- each view, which we will swap in and out using controller logic, goes here -->
+			<!-- first, the home view -->
+			<View id="homevView">
+				<!-- this will be filled in in the controller logic -->
+				<Label id='welcomeText'></Label>
+				<View id="hvButtonContainer">
+					<Button id="showCreateAccountBtn" title="Create Account" />
+					<Button id="showLoginBtn" title="Login" />
+					<Button id="shwoLoginFBBtn" title="Facebook Connect"/>
+				</View>
+			</View>
+		</ScrollView>
+	</Window>
+</Alloy>
