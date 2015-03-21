@@ -150,8 +150,6 @@ function processACSComments(model, method, opts) {
 	}
 }
 
-
-
 var _ = require("alloy/underscore")._;
 
 module.exports.sync = Sync;

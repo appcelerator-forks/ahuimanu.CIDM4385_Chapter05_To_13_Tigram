@@ -7,8 +7,10 @@ exports.definition = {
 		}
 	},
 	extendModel: function(Model) {
-		_.extend(Model.prototype, {
+		_.extend(Model.prototype, 
+		{
 			// extended functions and properties go here
+			// it is a comma-seperated list of functions and properties
 			/**
 			 * log user in with username and password
 			 * 
@@ -55,8 +57,56 @@ exports.definition = {
 						}
 					}
 				);
-			}
-			
+			},
+
+			createAccount: function(_ucerInfo, _callback)
+			{
+				var cloud = this.config.Cloud;
+				var TAP = Ti.App.Properties;
+				
+				//if we detect bad data, return to caller
+				if(!_userInfo)
+				{
+					_callback && _callback(
+						{
+							success: false,
+							model: null
+						}
+					);
+				} else {
+					//we've got good user info
+					cloud.Users.create(_userInfo, function(e){
+						if(e.success)
+						{
+							var user = e.users[0];
+							//set up persistent variables in the App's properties store
+							TAP.setString("sessionId", e.meta.session_id);
+							TAP.setString("user", JSON.stringify(user));
+							
+							//setting to allow ACS to track session id
+							cloud.sessionId = e.meta.session_id;
+							
+							//callback with newly created user
+							_callback && callback(
+								{
+									success: true,
+									model: new model(user)
+								}
+							);
+						} else {
+							//no bueno
+							Ti.API.error(e);
+							__callback && _callback(
+								{
+									success: false,
+									model: null,
+									error: e
+								}
+							);
+						}
+					});
+				}
+			}			
 		});
 
 		return Model;
