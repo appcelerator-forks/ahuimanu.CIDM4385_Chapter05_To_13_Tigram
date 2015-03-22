@@ -4,7 +4,7 @@
     <property name="acs-api-key-development" type="string">4RPY0CyChEiSvH9lbTze8UEHXXfWrLTK</property>
     <!-- we add this in for facebook compatibility in iOS 
          Presently, we do not have a facebook app id -->
-    <property name="ti.facebook.appid">FACEBOOK_APP_ID</property>
+    <property name="ti.facebook.appid">280856088781023</property>
     <id>edu.wtamu.cis.cidm4385.Tigram</id>
     <name>CIDM4385_Chapter05_To_13_Tigram</name>
     <version>1.0</version>
