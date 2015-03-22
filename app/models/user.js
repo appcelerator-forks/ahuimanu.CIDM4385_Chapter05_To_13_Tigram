@@ -222,6 +222,69 @@ exports.definition = {
 					}
 				);
 			}, //end showMe
+			
+			/**
+			 * Looks for the validity of the FB access token.  Uses ACS Social Integrations
+			 * if a FB token is detected to obtain an authenticated user model.  We also
+			 * set values in the properties store indicating a valid login
+			 *  
+             * @param {Object} _accessToken
+             * @param {Object} _opts
+			 */
+			updateFacebookLoginStatus : function(_accessToken, _opts) {
+				
+				var cloud = this.config.Cloud;
+				var TAP = Ti.App.Properties;
+				
+				// if not logged into facebook, then exit function
+				if (Alloy.Globals.FB.loggedIn == false) {
+					_opts.error && _opts.error(
+						{
+							success : false,
+							model : null,
+							error : "Not Logged into Facebook"
+						}
+					);
+          			alert('Please Log Into Facebook first');
+          			return;
+        		}
+
+        		// we have facebook  access token so we are good
+        		
+        		cloud.SocialIntegrations.externalAccountLogin({
+        			type : "facebook",
+        			token : _accessToken
+        			}, function(e) {
+        				if (e.success) {
+        					var user = e.users[0];
+        					TAP.setString("sessionId", e.meta.session_id);
+        					TAP.setString("user", JSON.stringify(user));
+        					
+        					// save how we logged in
+        					TAP.setString("loginType", "FACEBOOK");
+        					
+        					_opts.success && _opts.success(
+        						{
+        							success : true,
+        							model : new model(user),
+        							error : null
+        						}
+        					);
+          				} else {
+          					//no bueno
+          					Ti.API.error(e);
+          					_opts.error && _opts.error(
+          						{
+          							success : false,
+          							model : null,
+          							error : e
+          						}
+          					);
+          				}
+          			}
+          		);
+      		},			
+			
 		});
 
 		return Model;
