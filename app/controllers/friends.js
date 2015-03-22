@@ -2,8 +2,6 @@ var args = arguments[0] || {};
 
 var updating = false;
 
-var push = require('pushNotifications');
-
 // EVENT LISTENERS
 // on android, we need the change event not the click event
 $.filter.addEventListener( OS_ANDROID ? 'change' : 'click', filterClicked);
@@ -85,31 +83,7 @@ function followBtnClicked(_event) {
 				// update the UI to reflect the change
 				getAllUsersExceptFriends(function() {
 					Alloy.Globals.PW.hideIndicator();
-					
-					//this sends an alert to the screen suggesting thqt you are following this user
-					alert("You are now following " + selUser.displayName);
-
-					// send a push notification to the user to let
-					// them know they have a new friend
-					var currentUser = Alloy.Globals.currentUser;
-
-					push.sendPush({
-						payload : {
-							custom : {},
-							sound : "default",
-							alert : "You have a new friend! " + currentUser.get("email")
-						},
-						to_ids : selUser.model.id,
-					}, function(_repsonsePush) {
-						if (_repsonsePush.success) {
-							alert("Notified user of new friend");
-						} else {
-							alert("Error notifying user of new friend");
-						}
-					});
-
 				});
-
 			});
 
 		} else {
