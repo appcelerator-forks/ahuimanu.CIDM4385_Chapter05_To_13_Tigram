@@ -62,7 +62,11 @@ function filterClicked(_event) {
 }
 
 /**
- * Event handler for following/friending a user in the ListView
+ * Event handler for following/friending a user in the ListView.  When complete
+ * we call the updateFollowersFriendsLists method to reflect the new selection. We next
+ * update the $.friendUserCollection by calling getAllUsersExceptFriends.  As soon as the
+ * $.friendUserCollection is updated, the UI ListView will update
+ * 
  * @param {Object} _event
  */
 function followBtnClicked(_event) {
@@ -81,6 +85,8 @@ function followBtnClicked(_event) {
 				// update the UI to reflect the change
 				getAllUsersExceptFriends(function() {
 					Alloy.Globals.PW.hideIndicator();
+					
+					//this sends an alert to the screen suggesting thqt you are following this user
 					alert("You are now following " + selUser.displayName);
 
 					// send a push notification to the user to let
@@ -117,8 +123,10 @@ function followBtnClicked(_event) {
 };
 
 /**
- * Gets the model (an object), from the collection, for the selected user  
- *
+ * Gets the model (an object), from the collection, for the selected user using 
+ * the model's id.  This is why it is important to specify this in the 
+ * transform for the ListSection
+ * 
  * @param {Object} _event
  */
 function getModelFromSelectedRow(_event) {
@@ -132,7 +140,8 @@ function getModelFromSelectedRow(_event) {
 
 /**
  * This shows a list of those who have already been freinded.  We call it "following" as that
- * is the language of the API in ACS. 
+ * is the language of the API in ACS. We can unfollow here as this would be the event handler
+ * for the button showing in the list of friends.
  *
  *  @param {Object} _event
  */
