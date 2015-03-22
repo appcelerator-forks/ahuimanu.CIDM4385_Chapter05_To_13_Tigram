@@ -85,6 +85,57 @@ function processACSPhotos(model, method, options) {
 	}
 }
 
+/**
+ * This function will get or update user data from ACS
+ */
+function processACSUsers(model, method, options) {
+	switch (method) {
+		case "update":
+			var params = model.toJSON();
+			//uses ACS to update the user data
+			Cloud.Users.update(params, function(e) 
+				{
+					if (e.success) {
+						//the model in this case is a user
+						model.meta = e.meta;
+						//the first element of the users array contains the current user
+						options.success && options.success(e.users[0]);
+						model.trigger("fetch");
+					} else {
+						//no bueno
+						Ti.API.error("Cloud.Users.update " + e.message);
+						options.error && options.error(e.error && e.message || e);
+					}
+				}
+			);
+      		break;
+      	/* this comes from the authors repo, but doesn't appear in this chapter yet
+      	 * leaving it here for now 
+
+		case "read":
+    		options.data = options.data || {};
+    		model.id && (options.data.user_id = model.id);
+    		var readMethod = model.id ? Cloud.Users.show : Cloud.Users.query;
+    	
+    		readMethod(options.data || {}, function(e) 
+    			{
+    				if (e.success) {
+    					model.meta = e.meta;
+    					1 === e.users.length ? options.success(e.users[0]) : options.success(e.users);
+    					model.trigger("fetch");
+    			
+    					return;
+    			}
+    			
+    			Ti.API.error("Cloud.Users.query " + e.message);
+    			options.error && options.error(e.error && e.message || e);
+    		}
+    	);
+    	break;
+    	*/
+	}
+}
+
 
 /**
  * Process ACS Comments (reviews) - map to the REST function calls (CRUD)
