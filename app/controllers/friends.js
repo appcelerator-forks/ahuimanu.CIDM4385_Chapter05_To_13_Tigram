@@ -166,7 +166,7 @@ function followingBtnClicked(_event) {
 };
 
 /**
- *
+ * Shows a list of all users you are following and all users (all those who aren't friends)
  */
 function initialize() {
 	$.filter.index = 0;
@@ -177,6 +177,7 @@ function initialize() {
 		Alloy.Globals.PW.hideIndicator();
 
 		// get the users
+		//this also selects the correct template for the ListView
 		$.collectionType = "fullItem";
 
 		getAllUsersExceptFriends();
@@ -185,7 +186,8 @@ function initialize() {
 };
 
 /**
- *
+ * This is a helper method that allows getAllUsersExceptFriends access
+ * to an up-to-date list of a user's friends
  * @param {Object} _callback
  */
 function updateFollowersFriendsLists(_callback) {
@@ -213,6 +215,10 @@ function updateFollowersFriendsLists(_callback) {
 	});
 }
 
+/**
+ *  load a list of all friends
+ * @param {Object} _callback
+ */
 function loadFriends(_callback) {
 	var user = Alloy.Globals.currentUser;
 
@@ -235,6 +241,12 @@ function loadFriends(_callback) {
 	});
 };
 
+/**
+ * This finds all users, save for friends.  Method uses the current list of friends
+ * and calls the helper method updateFollowersFriendsList so that friends can be 
+ * excluded from this colleciton.  
+ * @param {Object} _callback
+ */
 function getAllUsersExceptFriends(_callback) {
 	var where_params = null;
 
@@ -277,6 +289,15 @@ function getAllUsersExceptFriends(_callback) {
 	});
 }
 
+/**
+ * We need to produce just a subset of model attributes that conform to what
+ * is specified in the ListSection element in the view.  We transform the original
+ * model object into a reduced JavaScript object which contains just the properties we need
+ * it is important to include the model id so that we can work with ACS and other
+ * aspects of the application should that ListItem be selected in the User Interface 
+ *
+ *  @param {Object} model
+ */
 function doTransform(model) {
 
 	var displayName,
@@ -308,6 +329,12 @@ function doTransform(model) {
 	return modelParams;
 };
 
+/**
+ * Any filtering desired as the collection is sent to the UI element - the ListView
+ * can be specified here.  In this case, we leave own user (the user running the app), and
+ * any administrative users, out of the list.
+ * @param {Object} _collection
+ */
 function doFilter(_collection) {
 	return _collection.filter(function(_i) {
 		var attrs = _i.attributes;
@@ -315,6 +342,7 @@ function doFilter(_collection) {
 	});
 };
 
+//call the initialize method when the view gets focus - to ensure that the correct list shows at first
 $.getView().addEventListener("focus", function() {
 	!$.initialized && initialize();
 	$.initialized = true;

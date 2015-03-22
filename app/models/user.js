@@ -283,7 +283,123 @@ exports.definition = {
           				}
           			}
           		);
-      		},			
+      		}, // end updateFacebookLoginStatus
+      		
+			/**
+			 * creates a list of followers of type Friend.  The boolean _followers determins if these
+			 * users are friends or not
+			 * @param {Function} _callback
+			 * @param {Boolean} _followers
+			 */
+			getFollowers : function(_callback, _followers) {
+				var followers = Alloy.createCollection("Friend");
+				followers.fetch(
+					{
+						data : {
+            				per_page : 100,
+            				q : " ",
+            				user_id : this.id,
+            				followers : _followers || "true"
+          				},
+          				success : function(_collection, _response) {
+            				_callback && _callback(
+            					{
+              						success : true,
+              						collection : _collection
+            					}
+            				);
+          				},
+          				error : function(_model, _response) {
+            				_callback && _callback(
+            					{
+              						success : false,
+              						collection : {},
+              						error : _response
+              					}
+              				);
+          				}
+        			}
+        		);
+
+      		}, //end getFollowers
+      		
+			/**
+       		 * By passing false to getFollowers, you get only the user's friends
+       		 * @param {Function} _callback
+       		 */
+      		getFriends : function(_callback) {
+        		this.getFollowers(_callback, false);
+      		}, //getFriends
+      		
+	        /**
+	         *
+	         * @param {String} _userid
+	         * @param {Function} _callback
+	         */
+	      	followUser : function(_userid, _callback) {
+	        	// create properties for friend
+	        	var friendItem = {
+	          		"user_ids" : _userid,
+	          		"approval_required" : "false"
+	        	};
+	        	
+	        	var friendItemModel = Alloy.createModel('Friend');
+	        	
+	        	friendItemModel.save(friendItem, 
+        			{
+        				success : function(_model, _response) {
+            				_callback(
+            					{
+              						success : true
+            					}
+            				);
+          				},
+          				error : function(_model, _response) {
+            				_callback(
+            					{
+              						success : false
+            					}
+            				);
+          				}
+        			}
+        		);
+	        }, //end followUser
+	        
+	        /**
+             * unfollows a user.  Each of these methods are backbone methods for working
+             * on the model data.
+             * @param {String} _userid
+             * @param {Function} _callback
+             */
+      		unFollowUser : function(_userid, _callback) {
+      			var friendItemModel = Alloy.createModel('Friend');
+      			
+      			// MUST set the id so Backbone will trigger the delete event
+      			friendItemModel.id = _userid;
+      			
+      			// destroy/delete the model
+      			friendItemModel.destroy(
+      				{
+          				data : {
+            				"user_ids" : [_userid]
+          				},
+          				success : function(_model, _response) {
+            				_callback(
+            					{
+              						success : true
+            					}
+            				);
+          				},
+          				error : function(_model, _response) {
+            				_callback(
+								{
+									success : false
+								}
+							);
+          				}
+        			}
+        		);
+      		}, //end unFollowUser
 			
 		});
 
