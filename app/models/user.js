@@ -169,7 +169,7 @@ exports.definition = {
 				var TAP = Ti.App.Properties;
 				
 				//check for success
-				if(TAP.hasPropert("sessionId")){
+				if(TAP.hasProperty("sessionId")){
 					Ti.API.info("SESSION ID: " + TAP.getString("SessionId"));
 					cloud.sessionId = TAP.getString("SessionId");
 					return true;

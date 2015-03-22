@@ -11,7 +11,7 @@
 					<Button id='showCreateAccountBtn' title="Create Account" />
 					<Button id='showLoginBtn' title="Login" />
 					<!-- for logging in with facebook -->
-					<Button id='shwoLoginFBBtn' title="Facebook Connect"/>
+					<Button id='showLoginFBBtn' title="Facebook Connect"/>
 				</View>
 			</View>
 			<!-- the login view -->
