@@ -1,3 +1,6 @@
+// load Geolocation library
+var geo = require("geo");
+
 var args = arguments[0] || {};
 
 //this captures the event
@@ -10,7 +13,6 @@ $.feedTable.addEventListener("click", processTableClicks);
 
 //handlers
 
-
 function processTableClicks(_event) {
 	if (_event.source.id === "commentButton") {
 		handleCommentButtonClicked(_event);
@@ -20,7 +22,6 @@ function processTableClicks(_event) {
 		handleShareButtonClicked(_event);
 	}
 }
-
 
 /**
  * work on handling comments through the comment model
@@ -58,27 +59,26 @@ function handleCommentButtonClicked(_event) {
  */
 $.cameraButtonClicked = function(_event) {
 	//alert("user clicked the camera button");
-	
+
 	var photoSource;
-	
-	Ti.API.debug('Ti.Media.isCameraSupported ' + Ti.Media.isCameraSupported);	
-	
-	if(Titanium.Media.getIsCameraSupported()){
+
+	Ti.API.debug('Ti.Media.isCameraSupported ' + Ti.Media.isCameraSupported);
+
+	if (Titanium.Media.getIsCameraSupported()) {
 		photoSource = Titanium.Media.showCamera;
 	} else {
 		photoSource = Titanium.Media.openPhotoGallery;
 	}
-
 
 	photoSource({
 		success : function(_event) {
 			//second argument is the callback
 			processImage(event.media, function(processResponse) {
 
-				if(processResponse.success){
+				if (processResponse.success) {
 					//create a row
 					var row = Alloy.createController("feedRow", processResponse.model);
-	
+
 					//add the controller view, which is a row to the table
 					if ($.feedTable.getData().length === 0) {
 						$.feedTable.setData([]);
@@ -86,10 +86,10 @@ $.cameraButtonClicked = function(_event) {
 					} else {
 						$.feedTable.insertRowBefore(0, row.getView(), true);
 					}
-	
-					//photoObject = photoResp;					
+
+					//photoObject = photoResp;
 				} else {
-					alert('Error saving photo ' + processResponse.message);					
+					alert('Error saving photo ' + processResponse.message);
 				}
 
 			});
@@ -112,59 +112,60 @@ $.cameraButtonClicked = function(_event) {
 	});
 };
 
-/*
-function processImage(_mediaObject, _callback){
-//we are not yet integrating with ACS, so we fake it
-var photoObject = {
-image: _mediaObject,
-title: "Sample Photo " + new Date()
-};
-
-//return the object to the caller
-_callback(photoObject);
-
-}*/
-
 //utility methods
 
 /**
- *
+ * Updated in chapter nine to include geo information.
  * @param {Object} _mediaObject object from the camera
  * @param {Function} _callback where to call when the function is completed
  */
 function processImage(_mediaObject, _callback) {
-	var parameters = {
-		"photo" : _mediaObject,
-		"title" : "Sample Photo " + new Date(),
-		"photo_sizes[preview]" : "200x200#",
-		"photo_sizes[iphone]" : "320x320#",
-		// We need this since we are showing the image immediately
-		"photo_sync_sizes[]" : "preview"
-	};
 
-	var photo = Alloy.createModel('Photo', parameters);
+	//the entire function has been changed to work in conjunction with
+	//geo.getCurrentLocation.  If we can't use geolocation services at the 
+	//time the the photo needs to be save, we don't hold that up.  That is,
+	//if a location was obtainable, we set it.  Otherwise, the data is null and
+	//we save the photo that way
+	geo.getCurrentLocation(function(_coords) {
+		var parameters = {
+			"photo" : _mediaObject,
+			"title" : "Sample Photo " + new Date(),
+			"photo_sizes[preview]" : "200x200#",
+			"photo_sizes[iphone]" : "320x320#",
+			// We need this since we are showing the image immediately
+			"photo_sync_sizes[]" : "preview"
+		};
 
-	photo.save({}, {
-		success : function(_model, _response) { 
-			Ti.API.debug('success: ' + _model.toJSON());
-			_callback({
-				model : _model,
-				message : null,
-				success : true
-			});
-		},
-		error : function(e) {
-			
-			Ti.API.error('error: ' + e.message);
-			_callback({
-				model : parameters,
-				message : e.message,
-				success : false
-			});
+		// if we got a location, then set it
+		if (_coords) {
+			parameters.custom_fields = {
+				coordinates : [_coords.coords.longitude, _coords.coords.latitude],
+				location_string : _coords.title
+			};
 		}
+
+		var photo = Alloy.createModel('Photo', parameters);
+
+		photo.save({}, {
+			success : function(_model, _response) {
+				Ti.API.debug('success: ' + _model.toJSON());
+				_callback({
+					model : _model,
+					message : null,
+					success : true
+				});
+			},
+			error : function(e) {
+				Ti.API.error('error: ' + e.message);
+				_callback({
+					model : parameters,
+					message : e.message,
+					success : false
+				});
+			}
+		});
 	});
 }
-
 
 /**
  * Loads photos from ACS
@@ -205,5 +206,5 @@ function loadPhotos() {
 
 //load photos on startup
 $.initialize = function() {
-  loadPhotos();
+	loadPhotos();
 };
